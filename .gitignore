@@ -1,0 +1,20 @@
+# Godot
+.godot/
+
+# Imported/editor-generated data
+.import/
+
+# Exported builds
+builds/
+exports/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
