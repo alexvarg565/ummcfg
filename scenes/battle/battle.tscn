@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://yitqulno1e08"]
 
 [ext_resource type="Script" uid="uid://c68h4f41k1qal" path="res://scripts/battle/battle_controller.gd" id="1_7gynk"]
-[ext_resource type="PackedScene" uid="uid://b5dgi03ssj1iq" path="res://scenes/battlefield.tscn" id="2_xd4uy"]
+[ext_resource type="PackedScene" uid="uid://b5dgi03ssj1iq" path="res://scenes/battle/battlefield.tscn" id="2_xd4uy"]
 [ext_resource type="Script" uid="uid://dd2ghp4pv5bp4" path="res://scripts/grid/grid_controller.gd" id="3_0yh6x"]
 
 [node name="Battle" type="Node2D" unique_id=956603992]
@@ -11,12 +11,13 @@ script = ExtResource("1_7gynk")
 
 [node name="Systems" type="Node" parent="." unique_id=1750069915]
 
-[node name="GridController" type="Node2D" parent="Systems" unique_id=1096955316]
+[node name="GridController" type="Node" parent="Systems" unique_id=105536836]
 script = ExtResource("3_0yh6x")
 
 [node name="CameraRig" type="Node2D" parent="." unique_id=515529373]
 
 [node name="Camera2D" type="Camera2D" parent="CameraRig" unique_id=700525405]
+position = Vector2(128, 128)
 
 [node name="BattleHUD" type="CanvasLayer" parent="." unique_id=884673455]
 

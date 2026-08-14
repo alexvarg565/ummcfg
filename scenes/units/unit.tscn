@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://ctmxxhuxefvmw"]
+
+[ext_resource type="Script" uid="uid://bee24tkyyjmiv" path="res://scripts/units/unit.gd" id="1_qgilm"]
+
+[node name="Unit" type="Node2D" unique_id=480937545]
+script = ExtResource("1_qgilm")
+
+[node name="VisualRoot" type="Node2D" parent="." unique_id=2036814264]
+
+[node name="Placeholder" type="Polygon2D" parent="VisualRoot" unique_id=410800324]
+color = Color(0.2687037, 0.26015887, 0.6563053, 1)
+polygon = PackedVector2Array(4, 4, 28, 4, 28, 28, 4, 28)
+uv = PackedVector2Array(-73.33368, 3.3333359, 17.999664, 2, 21.333008, 48.66667, -74.66699, 54)
+
+[node name="SelectionOutline" type="Polygon2D" parent="VisualRoot" unique_id=830557249]
+visible = false
+color = Color(0.9753259, 0.6596746, 0.75808007, 1)
+polygon = PackedVector2Array(2, 2, 30, 2, 30, 30, 2, 30)
+uv = PackedVector2Array(-73.33368, 3.3333359, 17.999664, 2, 21.333008, 48.66667, -74.66699, 54)
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=67370585]
+custom_minimum_size = Vector2(26, 3)
+offset_left = 3.0
+offset_top = -5.0
+offset_right = 29.0
+offset_bottom = -1.0
+show_percentage = false

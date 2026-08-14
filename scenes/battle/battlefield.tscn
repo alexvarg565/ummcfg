@@ -1,13 +1,21 @@
-[gd_scene format=3 uid="uid://chdx5tkqmagns"]
+[gd_scene format=3 uid="uid://b5dgi03ssj1iq"]
 
-[node name="Battlefield" type="Node2D" unique_id=399232382]
+[ext_resource type="Script" uid="uid://bc4qk0owngri" path="res://scripts/grid/grid_overlay.gd" id="1_5rve1"]
+[ext_resource type="Script" uid="uid://l066fyqawa6n" path="res://scripts/grid/grid_cursor.gd" id="2_d5hba"]
+[ext_resource type="PackedScene" uid="uid://ctmxxhuxefvmw" path="res://scenes/units/unit.tscn" id="2_j68fe"]
 
-[node name="Ground" type="Node2D" parent="." unique_id=392793163]
+[node name="Battlefield" type="Node2D" unique_id=1002692426]
 
-[node name="GridOverlay" type="Node2D" parent="." unique_id=1889204093]
+[node name="Ground" type="Node2D" parent="." unique_id=724229903]
 
-[node name="UnitLayer" type="Node2D" parent="." unique_id=1499031575]
+[node name="GridOverlay" type="Node2D" parent="." unique_id=426994446]
+script = ExtResource("1_5rve1")
 
-[node name="EffectLayer" type="Node2D" parent="." unique_id=1366007526]
+[node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
-[node name="GridCursor" type="Node2D" parent="." unique_id=1090925981]
+[node name="TestMech" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
+
+[node name="EffectLayer" type="Node2D" parent="." unique_id=1128003088]
+
+[node name="GridCursor" type="Node2D" parent="." unique_id=1649137336]
+script = ExtResource("2_d5hba")
