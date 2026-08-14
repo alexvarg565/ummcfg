@@ -1,3 +1,13 @@
 [gd_scene format=3 uid="uid://chdx5tkqmagns"]
 
-[node name="Battlefield" type="Node" unique_id=1893307211]
+[node name="Battlefield" type="Node2D" unique_id=399232382]
+
+[node name="Ground" type="Node2D" parent="." unique_id=392793163]
+
+[node name="GridOverlay" type="Node2D" parent="." unique_id=1889204093]
+
+[node name="UnitLayer" type="Node2D" parent="." unique_id=1499031575]
+
+[node name="EffectLayer" type="Node2D" parent="." unique_id=1366007526]
+
+[node name="GridCursor" type="Node2D" parent="." unique_id=1090925981]
