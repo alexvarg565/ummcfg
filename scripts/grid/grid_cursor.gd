@@ -36,7 +36,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _move_cursor(direction: Vector2i) -> void:
-	var target_position := grid_position + direction
+	var target_position: Vector2i = grid_position + direction
 
 	if not _is_inside_grid(target_position):
 		return
@@ -62,7 +62,7 @@ func _update_world_position() -> void:
 
 
 func _draw() -> void:
-	var tile_size := GridController.TILE_SIZE
+	var tile_size: int = GridController.TILE_SIZE
 
 	var rect := Rect2(
 		Vector2.ONE,

@@ -2,11 +2,24 @@ class_name BattleController
 extends Node2D
 
 
-@onready var grid_controller: GridController = $Systems/GridController
-@onready var grid_cursor: GridCursor = $Battlefield/GridCursor
-@onready var test_mech: Unit = $Battlefield/UnitLayer/TestMech
+@onready var grid_controller: GridController = \
+	$Systems/GridController
+
+@onready var grid_cursor: GridCursor = \
+	$Battlefield/GridCursor
+
+@onready var movement_highlights: MovementHighlights = \
+	$Battlefield/MovementHighlights
+
+@onready var test_mech: Unit = \
+	$Battlefield/UnitLayer/TestMech
+
+@onready var blocker: Unit = \
+	$Battlefield/UnitLayer/Blocker
+
 
 var selected_unit: Unit = null
+var valid_move_cells: Array[Vector2i] = []
 
 
 func _ready() -> void:
@@ -14,12 +27,16 @@ func _ready() -> void:
 
 	grid_cursor.cell_selected.connect(_on_cell_selected)
 
-	var placed := grid_controller.register_unit(
+	_place_test_units()
+
+
+func _place_test_units() -> void:
+	var mech_placed: bool = grid_controller.register_unit(
 		test_mech,
 		Vector2i(2, 3)
 	)
 
-	if placed:
+	if mech_placed:
 		print(
 			"Placed ",
 			test_mech.display_name,
@@ -29,9 +46,31 @@ func _ready() -> void:
 	else:
 		push_error("Failed to place test mech.")
 
+	var blocker_placed: bool = grid_controller.register_unit(
+		blocker,
+		Vector2i(3, 3)
+	)
+
+	if blocker_placed:
+		print(
+			"Placed ",
+			blocker.display_name,
+			" at ",
+			blocker.grid_position
+		)
+	else:
+		push_error("Failed to place blocker.")
+
 
 func _on_cell_selected(cell: Vector2i) -> void:
-	var unit := grid_controller.get_unit_at(cell)
+	if (
+		selected_unit != null
+		and cell in valid_move_cells
+	):
+		_move_selected_unit(cell)
+		return
+
+	var unit: Unit = grid_controller.get_unit_at(cell)
 
 	if unit == null:
 		_clear_selected_unit()
@@ -42,14 +81,23 @@ func _on_cell_selected(cell: Vector2i) -> void:
 
 
 func _select_unit(unit: Unit) -> void:
-	if selected_unit == unit:
-		return
-
-	if selected_unit != null:
+	if (
+		selected_unit != null
+		and selected_unit != unit
+	):
 		selected_unit.deselect()
 
 	selected_unit = unit
 	selected_unit.select()
+
+	valid_move_cells = grid_controller.get_reachable_cells(
+		selected_unit.grid_position,
+		selected_unit.movement_range
+	)
+
+	movement_highlights.show_cells(
+		valid_move_cells
+	)
 
 	print(
 		"Selected ",
@@ -59,11 +107,41 @@ func _select_unit(unit: Unit) -> void:
 	)
 
 
-func _clear_selected_unit() -> void:
+func _move_selected_unit(target_cell: Vector2i) -> void:
 	if selected_unit == null:
 		return
 
-	selected_unit.deselect()
+	var moved: bool = grid_controller.move_unit(
+		selected_unit,
+		target_cell
+	)
+
+	if not moved:
+		print(
+			"Failed to move ",
+			selected_unit.display_name,
+			" to ",
+			target_cell
+		)
+		return
+
+	print(
+		"Moved ",
+		selected_unit.display_name,
+		" to ",
+		target_cell
+	)
+
+	_clear_selected_unit()
+
+
+func _clear_selected_unit() -> void:
+	if selected_unit != null:
+		selected_unit.deselect()
+
 	selected_unit = null
+	valid_move_cells.clear()
+
+	movement_highlights.clear()
 
 	print("Selection cleared.")

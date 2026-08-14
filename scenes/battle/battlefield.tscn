@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bc4qk0owngri" path="res://scripts/grid/grid_overlay.gd" id="1_5rve1"]
 [ext_resource type="Script" uid="uid://l066fyqawa6n" path="res://scripts/grid/grid_cursor.gd" id="2_d5hba"]
 [ext_resource type="PackedScene" uid="uid://ctmxxhuxefvmw" path="res://scenes/units/unit.tscn" id="2_j68fe"]
+[ext_resource type="Script" uid="uid://retplmill132" path="res://scripts/grid/movement_highlights.gd" id="2_jabpe"]
 
 [node name="Battlefield" type="Node2D" unique_id=1002692426]
 
@@ -11,9 +12,14 @@
 [node name="GridOverlay" type="Node2D" parent="." unique_id=426994446]
 script = ExtResource("1_5rve1")
 
+[node name="MovementHighlights" type="Node2D" parent="." unique_id=927131710]
+script = ExtResource("2_jabpe")
+
 [node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
 [node name="TestMech" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
+
+[node name="Blocker" parent="UnitLayer" unique_id=707172998 instance=ExtResource("2_j68fe")]
 
 [node name="EffectLayer" type="Node2D" parent="." unique_id=1128003088]
 

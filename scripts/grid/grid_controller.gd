@@ -6,6 +6,13 @@ const GRID_WIDTH: int = 8
 const GRID_HEIGHT: int = 8
 const TILE_SIZE: int = 32
 
+const CARDINAL_DIRECTIONS: Array[Vector2i] = [
+	Vector2i.UP,
+	Vector2i.DOWN,
+	Vector2i.LEFT,
+	Vector2i.RIGHT
+]
+
 var occupied_tiles: Dictionary = {}
 
 
@@ -78,3 +85,43 @@ func move_unit(unit: Unit, target_cell: Vector2i) -> bool:
 	unit.set_grid_position(target_cell)
 
 	return true
+
+
+func get_reachable_cells(
+	origin: Vector2i,
+	movement_range: int
+) -> Array[Vector2i]:
+	var reachable: Array[Vector2i] = []
+
+	var frontier: Array[Vector2i] = [origin]
+
+	var distance_from_origin: Dictionary = {
+		origin: 0
+	}
+
+	while not frontier.is_empty():
+		var current: Vector2i = frontier.pop_front()
+		var current_distance: int = distance_from_origin[current]
+
+		if current_distance >= movement_range:
+			continue
+
+		for direction: Vector2i in CARDINAL_DIRECTIONS:
+			var next_cell: Vector2i = current + direction
+
+			if not is_inside_grid(next_cell):
+				continue
+
+			if distance_from_origin.has(next_cell):
+				continue
+
+			if is_occupied(next_cell):
+				continue
+
+			var next_distance: int = current_distance + 1
+
+			distance_from_origin[next_cell] = next_distance
+			frontier.append(next_cell)
+			reachable.append(next_cell)
+
+	return reachable

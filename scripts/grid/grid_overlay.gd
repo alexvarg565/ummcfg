@@ -18,8 +18,10 @@ func _draw() -> void:
 		true
 	)
 
-	for x in range(GridController.GRID_WIDTH + 1):
-		var x_position := float(x * GridController.TILE_SIZE)
+	for x: int in range(GridController.GRID_WIDTH + 1):
+		var x_position: float = float(
+			x * GridController.TILE_SIZE
+		)
 
 		draw_line(
 			Vector2(x_position, 0),
@@ -28,8 +30,10 @@ func _draw() -> void:
 			1.0
 		)
 
-	for y in range(GridController.GRID_HEIGHT + 1):
-		var y_position := float(y * GridController.TILE_SIZE)
+	for y: int in range(GridController.GRID_HEIGHT + 1):
+		var y_position: float = float(
+			y * GridController.TILE_SIZE
+		)
 
 		draw_line(
 			Vector2(0, y_position),
