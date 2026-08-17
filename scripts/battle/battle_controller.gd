@@ -31,6 +31,9 @@ func _ready() -> void:
 
 
 func _place_test_units() -> void:
+	test_mech.team = Unit.Team.PLAYER
+	blocker.team = Unit.Team.ENEMY
+
 	var mech_placed: bool = grid_controller.register_unit(
 		test_mech,
 		Vector2i(2, 3)
@@ -75,6 +78,11 @@ func _on_cell_selected(cell: Vector2i) -> void:
 	if unit == null:
 		_clear_selected_unit()
 		print("No unit at ", cell)
+		return
+
+	if not unit.is_player_unit():
+		_clear_selected_unit()
+		print("Cannot select enemy unit.")
 		return
 
 	_select_unit(unit)

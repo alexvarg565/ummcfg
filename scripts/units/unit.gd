@@ -4,9 +4,15 @@ extends Node2D
 
 signal selected(unit: Unit)
 
+enum Team {
+	PLAYER,
+	ENEMY
+}
+
 @export var display_name: String = "Test Mech"
 @export var max_health: int = 10
 @export var movement_range: int = 3
+@export var team: Team = Team.PLAYER
 
 var current_health: int = 0
 var grid_position: Vector2i = Vector2i.ZERO
@@ -46,3 +52,11 @@ func select() -> void:
 func deselect() -> void:
 	is_selected = false
 	selection_outline.visible = false
+
+
+func is_player_unit() -> bool:
+	return team == Team.PLAYER
+
+
+func is_enemy_unit() -> bool:
+	return team == Team.ENEMY
