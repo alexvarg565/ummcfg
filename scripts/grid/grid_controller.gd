@@ -125,3 +125,32 @@ func get_reachable_cells(
 			reachable.append(next_cell)
 
 	return reachable
+	
+func get_cells_in_range(
+	origin: Vector2i,
+	min_range: int,
+	max_range: int
+) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+
+	for x: int in range(GRID_WIDTH):
+		for y: int in range(GRID_HEIGHT):
+			var cell := Vector2i(x, y)
+
+			if cell == origin:
+				continue
+
+			var distance: int = (
+				absi(cell.x - origin.x)
+				+ absi(cell.y - origin.y)
+			)
+
+			if distance < min_range:
+				continue
+
+			if distance > max_range:
+				continue
+
+			cells.append(cell)
+
+	return cells

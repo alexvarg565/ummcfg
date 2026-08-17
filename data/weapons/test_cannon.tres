@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" format=3 uid="uid://bms184hftjay"]
+
+[ext_resource type="Script" uid="uid://bnpr6nulv3i45" path="res://resources/definitions/weapon_definition.gd" id="1_x1qux"]
+
+[resource]
+script = ExtResource("1_x1qux")
+metadata/_custom_type_script = "uid://bnpr6nulv3i45"

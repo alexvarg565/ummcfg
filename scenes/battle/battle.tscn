@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://c68h4f41k1qal" path="res://scripts/battle/battle_controller.gd" id="1_7gynk"]
 [ext_resource type="PackedScene" uid="uid://b5dgi03ssj1iq" path="res://scenes/battle/battlefield.tscn" id="2_xd4uy"]
 [ext_resource type="Script" uid="uid://dd2ghp4pv5bp4" path="res://scripts/grid/grid_controller.gd" id="3_0yh6x"]
+[ext_resource type="Script" uid="uid://dffsbqjybbv78" path="res://scripts/battle/initiative_controller.gd" id="4_0yh6x"]
+[ext_resource type="Script" uid="uid://ck0bedtrmom2w" path="res://scripts/battle/turn_controller.gd" id="5_h0kxc"]
 
 [node name="Battle" type="Node2D" unique_id=956603992]
 script = ExtResource("1_7gynk")
@@ -13,6 +15,12 @@ script = ExtResource("1_7gynk")
 
 [node name="GridController" type="Node" parent="Systems" unique_id=105536836]
 script = ExtResource("3_0yh6x")
+
+[node name="InitiativeController" type="Node" parent="Systems" unique_id=2111575856]
+script = ExtResource("4_0yh6x")
+
+[node name="TurnController" type="Node" parent="Systems" unique_id=532202696]
+script = ExtResource("5_h0kxc")
 
 [node name="CameraRig" type="Node2D" parent="." unique_id=515529373]
 
