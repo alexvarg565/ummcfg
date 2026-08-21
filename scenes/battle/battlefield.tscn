@@ -26,11 +26,36 @@ script = ExtResource("4_3cmhl")
 
 [node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
-[node name="TestMech" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
-max_health = 5
+[node name="MechA" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
+initiative = 18
 weapon = ExtResource("5_c8ews")
 
-[node name="Blocker" parent="UnitLayer" unique_id=707172998 instance=ExtResource("2_j68fe")]
+[node name="MechB" parent="UnitLayer" unique_id=516822578 instance=ExtResource("2_j68fe")]
+initiative = 14
+weapon = ExtResource("5_c8ews")
+
+[node name="MechC" parent="UnitLayer" unique_id=702576721 instance=ExtResource("2_j68fe")]
+initiative = 9
+weapon = ExtResource("5_c8ews")
+
+[node name="GruntA" parent="UnitLayer" unique_id=707172998 instance=ExtResource("2_j68fe")]
+team = 1
+max_health = 6
+movement_range = 2
+initiative = 16
+weapon = ExtResource("5_c8ews")
+
+[node name="GruntB" parent="UnitLayer" unique_id=1425909269 instance=ExtResource("2_j68fe")]
+team = 1
+max_health = 6
+movement_range = 2
+initiative = 7
+weapon = ExtResource("5_c8ews")
+
+[node name="Elite" parent="UnitLayer" unique_id=530555448 instance=ExtResource("2_j68fe")]
+team = 1
+movement_range = 2
+initiative = 11
 weapon = ExtResource("5_c8ews")
 
 [node name="EffectLayer" type="Node2D" parent="." unique_id=1128003088]

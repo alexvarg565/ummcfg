@@ -29,12 +29,13 @@ enum InputMode {
 @onready var intent_highlights: IntentHighlights = \
 	$Battlefield/IntentHighlights
 
-@onready var test_mech: Unit = \
-	$Battlefield/UnitLayer/TestMech
+@onready var unit_layer: Node2D = \
+	$Battlefield/UnitLayer
 
-@onready var blocker: Unit = \
-	$Battlefield/UnitLayer/Blocker
 
+var all_units: Array[Unit] = []
+var player_units: Array[Unit] = []
+var enemy_units: Array[Unit] = []
 
 var selected_unit: Unit = null
 
@@ -61,88 +62,104 @@ func _ready() -> void:
 		_on_active_unit_changed
 	)
 
+	_collect_units()
 	_register_unit_signals()
-
-	_place_test_units()
+	_place_units()
 	_start_turn_system()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("attack"):
-		_try_enter_attack_mode()
+# ==================================================
+# UNIT COLLECTION / SETUP
+# ==================================================
 
-		get_viewport().set_input_as_handled()
-		return
+func _collect_units() -> void:
+	all_units.clear()
+	player_units.clear()
+	enemy_units.clear()
 
-	if event.is_action_pressed("end_turn"):
-		_try_end_player_activation()
+	for child: Node in unit_layer.get_children():
+		var unit: Unit = child as Unit
 
-		get_viewport().set_input_as_handled()
+		if unit == null:
+			continue
+
+		all_units.append(unit)
+
+		if unit.is_player_unit():
+			player_units.append(unit)
+		elif unit.is_enemy_unit():
+			enemy_units.append(unit)
+
+	print(
+		"Collected ",
+		all_units.size(),
+		" units."
+	)
+
+	print(
+		"Players: ",
+		player_units.size(),
+		" | Enemies: ",
+		enemy_units.size()
+	)
 
 
 func _register_unit_signals() -> void:
-	test_mech.died.connect(
-		_on_unit_died
-	)
+	for unit: Unit in all_units:
+		if not unit.died.is_connected(
+			_on_unit_died
+		):
+			unit.died.connect(
+				_on_unit_died
+			)
 
-	blocker.died.connect(
-		_on_unit_died
-	)
 
+func _place_units() -> void:
+	var spawn_positions: Dictionary = {
+		"MechA": Vector2i(1, 2),
+		"MechB": Vector2i(1, 4),
+		"MechC": Vector2i(1, 6),
+		"GruntA": Vector2i(6, 2),
+		"Elite": Vector2i(6, 4),
+		"GruntB": Vector2i(6, 6)
+	}
 
-func _place_test_units() -> void:
-	test_mech.team = Unit.Team.PLAYER
-	test_mech.initiative = 15
+	for unit: Unit in all_units:
+		if not spawn_positions.has(unit.name):
+			push_warning(
+				"No spawn position found for ",
+				unit.name
+			)
 
-	blocker.team = Unit.Team.ENEMY
-	blocker.initiative = 10
+			continue
 
-	var mech_placed: bool = \
-		grid_controller.register_unit(
-			test_mech,
-			Vector2i(2, 3)
-		)
+		var spawn_cell: Vector2i = \
+			spawn_positions[unit.name]
 
-	if mech_placed:
-		print(
-			"Placed ",
-			test_mech.display_name,
-			" at ",
-			test_mech.grid_position
-		)
-	else:
-		push_error(
-			"Failed to place test mech."
-		)
+		var placed: bool = \
+			grid_controller.register_unit(
+				unit,
+				spawn_cell
+			)
 
-	var enemy_placed: bool = \
-		grid_controller.register_unit(
-			blocker,
-			Vector2i(3, 3)
-		)
-
-	if enemy_placed:
-		print(
-			"Placed ",
-			blocker.display_name,
-			" at ",
-			blocker.grid_position
-		)
-	else:
-		push_error(
-			"Failed to place enemy."
-		)
+		if placed:
+			print(
+				"Placed ",
+				unit.display_name,
+				" at ",
+				unit.grid_position
+			)
+		else:
+			push_error(
+				"Failed to place ",
+				unit.display_name
+			)
 
 
 func _start_turn_system() -> void:
-	var units: Array[Unit] = [
-		test_mech,
-		blocker
-	]
-
 	var initiative_order: Array[Unit] = \
 		initiative_controller.build_order(
-			units
+			all_units
 		)
 
 	print("")
@@ -160,9 +177,32 @@ func _start_turn_system() -> void:
 	)
 
 
-# --------------------------------------------------
+# ==================================================
+# INPUT
+# ==================================================
+
+func _unhandled_input(
+	event: InputEvent
+) -> void:
+	if event.is_action_pressed(
+		"attack"
+	):
+		_try_enter_attack_mode()
+
+		get_viewport().set_input_as_handled()
+		return
+
+	if event.is_action_pressed(
+		"end_turn"
+	):
+		_try_end_player_activation()
+
+		get_viewport().set_input_as_handled()
+
+
+# ==================================================
 # ROUND / INITIATIVE
-# --------------------------------------------------
+# ==================================================
 
 func _on_round_started(
 	round_number: int
@@ -185,18 +225,22 @@ func _on_active_unit_changed(
 			"Player activation: ",
 			unit.display_name
 		)
-	else:
-		print(
-			"Enemy activation: ",
-			unit.display_name
-		)
 
-		_execute_enemy_intent(unit)
+		return
+
+	print(
+		"Enemy activation: ",
+		unit.display_name
+	)
+
+	_execute_enemy_turn(
+		unit
+	)
 
 
-# --------------------------------------------------
-# ENEMY INTENT
-# --------------------------------------------------
+# ==================================================
+# ENEMY INTENT PLANNING
+# ==================================================
 
 func _plan_enemy_intents() -> void:
 	enemy_intents.clear()
@@ -204,34 +248,34 @@ func _plan_enemy_intents() -> void:
 
 	var intent_cells: Array[Vector2i] = []
 
-	for unit: Unit in turn_controller.turn_order:
-		if unit == null:
+	for enemy: Unit in enemy_units:
+		if enemy == null:
 			continue
 
-		if not unit.is_alive:
-			continue
-
-		if not unit.is_enemy_unit():
+		if not enemy.is_alive:
 			continue
 
 		var intent: EnemyIntent = \
-			_create_enemy_intent(unit)
+			_create_enemy_intent(
+				enemy
+			)
 
 		if intent == null:
 			print(
-				unit.display_name,
+				enemy.display_name,
 				" has no valid intent."
 			)
 
 			continue
 
-		enemy_intents[unit] = intent
+		enemy_intents[enemy] = intent
+
 		intent_cells.append(
 			intent.target_cell
 		)
 
 		print(
-			unit.display_name,
+			enemy.display_name,
 			" intends to attack ",
 			intent.target_cell
 		)
@@ -248,7 +292,9 @@ func _create_enemy_intent(
 		return null
 
 	var target: Unit = \
-		_find_enemy_target(enemy)
+		_find_closest_living_player(
+			enemy
+		)
 
 	if target == null:
 		return null
@@ -260,20 +306,17 @@ func _create_enemy_intent(
 	)
 
 
-func _find_enemy_target(
+func _find_closest_living_player(
 	enemy: Unit
 ) -> Unit:
 	var best_target: Unit = null
 	var best_distance: int = 999999
 
-	for candidate: Unit in turn_controller.turn_order:
+	for candidate: Unit in player_units:
 		if candidate == null:
 			continue
 
 		if not candidate.is_alive:
-			continue
-
-		if candidate.team == enemy.team:
 			continue
 
 		var distance: int = \
@@ -282,12 +325,6 @@ func _find_enemy_target(
 				candidate.grid_position
 			)
 
-		if distance < enemy.weapon.min_range:
-			continue
-
-		if distance > enemy.weapon.max_range:
-			continue
-
 		if distance < best_distance:
 			best_distance = distance
 			best_target = candidate
@@ -295,42 +332,263 @@ func _find_enemy_target(
 	return best_target
 
 
-func _execute_enemy_intent(
+# ==================================================
+# ENEMY TURN
+# ==================================================
+
+func _execute_enemy_turn(
 	enemy: Unit
 ) -> void:
-	if not enemy_intents.has(enemy):
+	if not enemy.is_alive:
+		turn_controller.end_current_activation()
+		return
+
+	var intent: EnemyIntent = null
+
+	if enemy_intents.has(enemy):
+		intent = enemy_intents[enemy]
+
+	if intent == null:
 		print(
 			enemy.display_name,
-			" has no committed action."
+			" has no committed attack."
 		)
+
+		_move_enemy_without_intent(enemy)
 
 		turn_controller.end_current_activation()
 		return
 
-	var intent: EnemyIntent = \
-		enemy_intents[enemy]
+	# Movement is chosen NOW, when the enemy's turn begins.
+	_move_enemy_for_intent(
+		enemy,
+		intent
+	)
 
-	enemy_intents.erase(enemy)
-
-	_refresh_intent_highlights()
-
-	if not _is_enemy_intent_still_valid(
+	# The attack itself remains committed.
+	if _can_execute_enemy_attack(
 		intent
 	):
+		_execute_enemy_attack(
+			intent
+		)
+	else:
 		print(
 			enemy.display_name,
 			"'s committed attack failed."
 		)
 
-		turn_controller.end_current_activation()
-		return
+	enemy_intents.erase(enemy)
 
-	_execute_enemy_attack(intent)
+	_refresh_intent_highlights()
 
 	turn_controller.end_current_activation()
 
 
-func _is_enemy_intent_still_valid(
+# ==================================================
+# ENEMY MOVEMENT
+# ==================================================
+
+func _move_enemy_for_intent(
+	enemy: Unit,
+	intent: EnemyIntent
+) -> void:
+	if enemy.weapon == null:
+		return
+
+	# If the enemy can already attack the committed
+	# tile, staying still is currently preferred.
+	if _is_target_in_weapon_range(
+		enemy.weapon,
+		enemy.grid_position,
+		intent.target_cell
+	):
+		print(
+			enemy.display_name,
+			" is already in range."
+		)
+
+		return
+
+	var destination: Vector2i = \
+		_choose_enemy_move_cell(
+			enemy,
+			intent
+		)
+
+	if destination == enemy.grid_position:
+		print(
+			enemy.display_name,
+			" cannot improve its position."
+		)
+
+		return
+
+	var moved: bool = \
+		grid_controller.move_unit(
+			enemy,
+			destination
+		)
+
+	if not moved:
+		print(
+			enemy.display_name,
+			" could not move to ",
+			destination
+		)
+
+		return
+
+	enemy.mark_moved()
+
+	print(
+		enemy.display_name,
+		" moves to ",
+		destination
+	)
+
+
+func _choose_enemy_move_cell(
+	enemy: Unit,
+	intent: EnemyIntent
+) -> Vector2i:
+	var reachable_cells: Array[Vector2i] = \
+		grid_controller.get_reachable_cells(
+			enemy.grid_position,
+			enemy.movement_range
+		)
+
+	# Staying where it is must also be considered
+	# a legal movement choice.
+	var best_cell: Vector2i = \
+		enemy.grid_position
+
+	var best_score: int = \
+		_get_attack_position_score(
+			enemy.weapon,
+			best_cell,
+			intent.target_cell
+		)
+
+	var best_move_distance: int = 0
+
+	for cell: Vector2i in reachable_cells:
+		var score: int = \
+			_get_attack_position_score(
+				enemy.weapon,
+				cell,
+				intent.target_cell
+			)
+
+		var move_distance: int = \
+			_get_grid_distance(
+				enemy.grid_position,
+				cell
+			)
+
+		if score < best_score:
+			best_score = score
+			best_move_distance = move_distance
+			best_cell = cell
+			continue
+
+		if (
+			score == best_score
+			and move_distance < best_move_distance
+		):
+			best_move_distance = move_distance
+			best_cell = cell
+
+	return best_cell
+
+
+func _get_attack_position_score(
+	weapon: WeaponDefinition,
+	origin: Vector2i,
+	target: Vector2i
+) -> int:
+	var distance: int = \
+		_get_grid_distance(
+			origin,
+			target
+		)
+
+	# Perfect position.
+	if (
+		distance >= weapon.min_range
+		and distance <= weapon.max_range
+	):
+		return 0
+
+	# Too far away.
+	if distance > weapon.max_range:
+		return distance - weapon.max_range
+
+	# Too close.
+	return weapon.min_range - distance
+
+
+func _move_enemy_without_intent(
+	enemy: Unit
+) -> void:
+	var target: Unit = \
+		_find_closest_living_player(
+			enemy
+		)
+
+	if target == null:
+		return
+
+	var reachable_cells: Array[Vector2i] = \
+		grid_controller.get_reachable_cells(
+			enemy.grid_position,
+			enemy.movement_range
+		)
+
+	var best_cell: Vector2i = \
+		enemy.grid_position
+
+	var best_distance: int = \
+		_get_grid_distance(
+			best_cell,
+			target.grid_position
+		)
+
+	for cell: Vector2i in reachable_cells:
+		var distance: int = \
+			_get_grid_distance(
+				cell,
+				target.grid_position
+			)
+
+		if distance < best_distance:
+			best_distance = distance
+			best_cell = cell
+
+	if best_cell == enemy.grid_position:
+		return
+
+	var moved: bool = \
+		grid_controller.move_unit(
+			enemy,
+			best_cell
+		)
+
+	if moved:
+		enemy.mark_moved()
+
+		print(
+			enemy.display_name,
+			" advances to ",
+			best_cell
+		)
+
+
+# ==================================================
+# ENEMY ATTACK
+# ==================================================
+
+func _can_execute_enemy_attack(
 	intent: EnemyIntent
 ) -> bool:
 	if intent.actor == null:
@@ -347,24 +605,20 @@ func _is_enemy_intent_still_valid(
 	):
 		return false
 
-	var distance: int = \
-		_get_grid_distance(
-			intent.actor.grid_position,
-			intent.target_cell
-		)
-
-	if distance < intent.weapon.min_range:
-		return false
-
-	if distance > intent.weapon.max_range:
-		return false
-
-	return true
+	return _is_target_in_weapon_range(
+		intent.weapon,
+		intent.actor.grid_position,
+		intent.target_cell
+	)
 
 
 func _execute_enemy_attack(
 	intent: EnemyIntent
 ) -> void:
+	# The primary action is consumed even if
+	# the committed tile is now empty.
+	intent.actor.mark_acted()
+
 	var target: Unit = \
 		grid_controller.get_unit_at(
 			intent.target_cell
@@ -382,17 +636,15 @@ func _execute_enemy_attack(
 
 		return
 
-	if target.team == intent.actor.team:
-		print(
-			intent.actor.display_name,
-			" fires at ",
-			intent.target_cell,
-			" and hits an allied unit!"
-		)
-
 	var damage: int = \
 		_roll_weapon_damage(
 			intent.weapon
+		)
+
+	if target.team == intent.actor.team:
+		print(
+			intent.actor.display_name,
+			" hits an allied unit!"
 		)
 
 	print(
@@ -406,15 +658,17 @@ func _execute_enemy_attack(
 		" damage."
 	)
 
-	target.take_damage(damage)
-
-	intent.actor.mark_acted()
+	target.take_damage(
+		damage
+	)
 
 
 func _refresh_intent_highlights() -> void:
 	var cells: Array[Vector2i] = []
 
-	for intent_value: Variant in enemy_intents.values():
+	for intent_value: Variant in \
+		enemy_intents.values():
+
 		var intent: EnemyIntent = \
 			intent_value as EnemyIntent
 
@@ -425,12 +679,14 @@ func _refresh_intent_highlights() -> void:
 			intent.target_cell
 		)
 
-	intent_highlights.show_cells(cells)
+	intent_highlights.show_cells(
+		cells
+	)
 
 
-# --------------------------------------------------
+# ==================================================
 # PLAYER SELECTION / MOVEMENT
-# --------------------------------------------------
+# ==================================================
 
 func _on_cell_selected(
 	cell: Vector2i
@@ -444,19 +700,29 @@ func _on_cell_selected(
 	if not active_unit.is_player_unit():
 		return
 
-	if input_mode == InputMode.ATTACK_TARGETING:
-		_try_attack_cell(cell)
+	if input_mode == \
+		InputMode.ATTACK_TARGETING:
+
+		_try_attack_cell(
+			cell
+		)
+
 		return
 
 	if (
 		selected_unit != null
 		and cell in valid_move_cells
 	):
-		_move_selected_unit(cell)
+		_move_selected_unit(
+			cell
+		)
+
 		return
 
 	var unit: Unit = \
-		grid_controller.get_unit_at(cell)
+		grid_controller.get_unit_at(
+			cell
+		)
 
 	if unit == null:
 		_clear_selection_state()
@@ -490,7 +756,9 @@ func _on_cell_selected(
 
 		return
 
-	_select_unit(unit)
+	_select_unit(
+		unit
+	)
 
 
 func _select_unit(
@@ -578,9 +846,9 @@ func _move_selected_unit(
 	_refresh_movement_highlights()
 
 
-# --------------------------------------------------
+# ==================================================
 # PLAYER ATTACK
-# --------------------------------------------------
+# ==================================================
 
 func _try_enter_attack_mode() -> void:
 	var active_unit: Unit = \
@@ -649,7 +917,9 @@ func _try_attack_cell(
 		return
 
 	var target: Unit = \
-		grid_controller.get_unit_at(cell)
+		grid_controller.get_unit_at(
+			cell
+		)
 
 	if target == null:
 		print(
@@ -659,7 +929,9 @@ func _try_attack_cell(
 
 		return
 
-	if target.team == selected_unit.team:
+	if target.team == \
+		selected_unit.team:
+
 		print(
 			"Cannot attack friendly unit."
 		)
@@ -695,7 +967,9 @@ func _execute_basic_attack(
 		" damage."
 	)
 
-	target.take_damage(damage)
+	target.take_damage(
+		damage
+	)
 
 	attacker.mark_acted()
 
@@ -705,7 +979,8 @@ func _execute_basic_attack(
 func _roll_weapon_damage(
 	weapon: WeaponDefinition
 ) -> int:
-	var total: int = weapon.damage_bonus
+	var total: int = \
+		weapon.damage_bonus
 
 	for roll_index: int in range(
 		weapon.damage_dice
@@ -727,11 +1002,13 @@ func _exit_attack_mode() -> void:
 	_refresh_movement_highlights()
 
 
-# --------------------------------------------------
-# UNIT DEATH
-# --------------------------------------------------
+# ==================================================
+# UNIT DEATH / BATTLE END
+# ==================================================
 
-func _on_unit_died(unit: Unit) -> void:
+func _on_unit_died(
+	unit: Unit
+) -> void:
 	print(
 		"Removing ",
 		unit.display_name,
@@ -741,10 +1018,14 @@ func _on_unit_died(unit: Unit) -> void:
 	if selected_unit == unit:
 		_clear_selection_state()
 
-	grid_controller.unregister_unit(unit)
+	grid_controller.unregister_unit(
+		unit
+	)
 
 	if enemy_intents.has(unit):
-		enemy_intents.erase(unit)
+		enemy_intents.erase(
+			unit
+		)
 
 	_refresh_intent_highlights()
 
@@ -752,9 +1033,59 @@ func _on_unit_died(unit: Unit) -> void:
 
 	_check_battle_end()
 
-# --------------------------------------------------
+
+func _check_battle_end() -> void:
+	var player_alive: bool = false
+	var enemy_alive: bool = false
+
+	for unit: Unit in player_units:
+		if (
+			unit != null
+			and unit.is_alive
+		):
+			player_alive = true
+			break
+
+	for unit: Unit in enemy_units:
+		if (
+			unit != null
+			and unit.is_alive
+		):
+			enemy_alive = true
+			break
+
+	if not player_alive:
+		_end_battle(false)
+		return
+
+	if not enemy_alive:
+		_end_battle(true)
+
+
+func _end_battle(
+	player_won: bool
+) -> void:
+	turn_controller.stop_battle()
+
+	_clear_selection_state()
+
+	enemy_intents.clear()
+	intent_highlights.clear()
+
+	print("")
+	print("====================")
+
+	if player_won:
+		print("VICTORY")
+	else:
+		print("DEFEAT")
+
+	print("====================")
+
+
+# ==================================================
 # TURN END
-# --------------------------------------------------
+# ==================================================
 
 func _try_end_player_activation() -> void:
 	var active_unit: Unit = \
@@ -791,6 +1122,27 @@ func _clear_selection_state() -> void:
 	input_mode = InputMode.NORMAL
 
 
+# ==================================================
+# HELPERS
+# ==================================================
+
+func _is_target_in_weapon_range(
+	weapon: WeaponDefinition,
+	origin: Vector2i,
+	target: Vector2i
+) -> bool:
+	var distance: int = \
+		_get_grid_distance(
+			origin,
+			target
+		)
+
+	return (
+		distance >= weapon.min_range
+		and distance <= weapon.max_range
+	)
+
+
 func _get_grid_distance(
 	a: Vector2i,
 	b: Vector2i
@@ -799,44 +1151,3 @@ func _get_grid_distance(
 		absi(a.x - b.x)
 		+ absi(a.y - b.y)
 	)
-
-func _check_battle_end() -> void:
-	var player_alive: bool = false
-	var enemy_alive: bool = false
-
-	for unit: Unit in turn_controller.turn_order:
-		if unit == null:
-			continue
-
-		if not unit.is_alive:
-			continue
-
-		if unit.is_player_unit():
-			player_alive = true
-		elif unit.is_enemy_unit():
-			enemy_alive = true
-
-	if not player_alive:
-		_end_battle(false)
-		return
-
-	if not enemy_alive:
-		_end_battle(true)
-
-func _end_battle(player_won: bool) -> void:
-	turn_controller.stop_battle()
-
-	_clear_selection_state()
-
-	enemy_intents.clear()
-	intent_highlights.clear()
-
-	print("")
-	print("====================")
-
-	if player_won:
-		print("VICTORY")
-	else:
-		print("DEFEAT")
-
-	print("====================")
