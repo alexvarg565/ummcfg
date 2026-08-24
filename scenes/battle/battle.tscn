@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dd2ghp4pv5bp4" path="res://scripts/grid/grid_controller.gd" id="3_0yh6x"]
 [ext_resource type="Script" uid="uid://dffsbqjybbv78" path="res://scripts/battle/initiative_controller.gd" id="4_0yh6x"]
 [ext_resource type="Script" uid="uid://ck0bedtrmom2w" path="res://scripts/battle/turn_controller.gd" id="5_h0kxc"]
+[ext_resource type="PackedScene" uid="uid://cfavtps23s5c" path="res://scenes/ui/battle_hud.tscn" id="6_fh7rg"]
 
 [node name="Battle" type="Node2D" unique_id=956603992]
 script = ExtResource("1_7gynk")
@@ -27,7 +28,7 @@ script = ExtResource("5_h0kxc")
 [node name="Camera2D" type="Camera2D" parent="CameraRig" unique_id=700525405]
 position = Vector2(128, 128)
 
-[node name="BattleHUD" type="CanvasLayer" parent="." unique_id=884673455]
+[node name="BattleHUD" parent="." unique_id=733208435 instance=ExtResource("6_fh7rg")]
 
 [node name="Audio" type="Node" parent="." unique_id=1512951315]
 

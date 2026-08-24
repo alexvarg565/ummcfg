@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://ctmxxhuxefvmw"]
 
 [ext_resource type="Script" uid="uid://bee24tkyyjmiv" path="res://scripts/units/unit.gd" id="1_qgilm"]
+[ext_resource type="Texture2D" uid="uid://cfkt2eu5kvy05" path="res://assets/sprites/ui/activearrow.png" id="2_cx6aj"]
+[ext_resource type="Texture2D" uid="uid://cvv2ss6qfy35n" path="res://assets/sprites/ui/nextarrow.png" id="3_6k8ya"]
 
 [node name="Unit" type="Node2D" unique_id=480937545]
 script = ExtResource("1_qgilm")
@@ -17,6 +19,18 @@ visible = false
 color = Color(0.9753259, 0.6596746, 0.75808007, 1)
 polygon = PackedVector2Array(2, 2, 30, 2, 30, 30, 2, 30)
 uv = PackedVector2Array(-73.33368, 3.3333359, 17.999664, 2, 21.333008, 48.66667, -74.66699, 54)
+
+[node name="IndicatorRoot" type="Node2D" parent="." unique_id=2008335778]
+z_index = 10
+position = Vector2(16, 3)
+
+[node name="ActiveArrow" type="Sprite2D" parent="IndicatorRoot" unique_id=929550673]
+texture = ExtResource("2_cx6aj")
+
+[node name="NextArrow" type="Sprite2D" parent="IndicatorRoot" unique_id=252057983]
+modulate = Color(1, 1, 1, 0.49019608)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("3_6k8ya")
 
 [node name="HealthBar" type="ProgressBar" parent="." unique_id=67370585]
 custom_minimum_size = Vector2(26, 3)

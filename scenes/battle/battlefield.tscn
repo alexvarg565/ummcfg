@@ -7,6 +7,12 @@
 [ext_resource type="Script" uid="uid://coof8ha5p0l8w" path="res://scripts/combat/attack_highlights.gd" id="3_vp22n"]
 [ext_resource type="Script" uid="uid://l136xipqmu4o" path="res://scripts/ai/intent_highlights.gd" id="4_3cmhl"]
 [ext_resource type="Resource" uid="uid://bms184hftjay" path="res://data/weapons/test_cannon.tres" id="5_c8ews"]
+[ext_resource type="Texture2D" uid="uid://balxklk2guwi1" path="res://assets/sprites/mechs/scrappers/scrapprobe.png" id="7_14yoq"]
+[ext_resource type="Texture2D" uid="uid://c3tbcljlq7ob4" path="res://assets/sprites/mechs/scrappers/scrapbomber.png" id="8_ynl3h"]
+[ext_resource type="Texture2D" uid="uid://baf421d4a2g5f" path="res://assets/sprites/mechs/scrappers/scrapcrawler.png" id="9_wt2cq"]
+[ext_resource type="Texture2D" uid="uid://red3yo158pql" path="res://assets/sprites/enemies/grunts/flyingmouth.png" id="10_e0frd"]
+[ext_resource type="Texture2D" uid="uid://bonv6hhq1ovu1" path="res://assets/sprites/enemies/elites/goop.png" id="11_ohpug"]
+[ext_resource type="Script" uid="uid://do5r4am81ri1f" path="res://scripts/combat/combat_feedback.gd" id="12_ohpug"]
 
 [node name="Battlefield" type="Node2D" unique_id=1002692426]
 
@@ -27,16 +33,29 @@ script = ExtResource("4_3cmhl")
 [node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
 [node name="MechA" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
+texture_filter = 1
 initiative = 18
 weapon = ExtResource("5_c8ews")
+
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/MechA" unique_id=524649572]
+texture = ExtResource("7_14yoq")
+offset = Vector2(16, 16)
 
 [node name="MechB" parent="UnitLayer" unique_id=516822578 instance=ExtResource("2_j68fe")]
 initiative = 14
 weapon = ExtResource("5_c8ews")
 
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/MechB" unique_id=1616106944]
+texture = ExtResource("8_ynl3h")
+offset = Vector2(16, 16)
+
 [node name="MechC" parent="UnitLayer" unique_id=702576721 instance=ExtResource("2_j68fe")]
 initiative = 9
 weapon = ExtResource("5_c8ews")
+
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/MechC" unique_id=276804069]
+texture = ExtResource("9_wt2cq")
+offset = Vector2(16, 16)
 
 [node name="GruntA" parent="UnitLayer" unique_id=707172998 instance=ExtResource("2_j68fe")]
 team = 1
@@ -45,6 +64,10 @@ movement_range = 2
 initiative = 16
 weapon = ExtResource("5_c8ews")
 
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/GruntA" unique_id=576803937]
+texture = ExtResource("10_e0frd")
+offset = Vector2(16, 16)
+
 [node name="GruntB" parent="UnitLayer" unique_id=1425909269 instance=ExtResource("2_j68fe")]
 team = 1
 max_health = 6
@@ -52,13 +75,25 @@ movement_range = 2
 initiative = 7
 weapon = ExtResource("5_c8ews")
 
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/GruntB" unique_id=1738783394]
+texture = ExtResource("10_e0frd")
+offset = Vector2(16, 16)
+
 [node name="Elite" parent="UnitLayer" unique_id=530555448 instance=ExtResource("2_j68fe")]
 team = 1
 movement_range = 2
 initiative = 11
 weapon = ExtResource("5_c8ews")
 
+[node name="Sprite2D" type="Sprite2D" parent="UnitLayer/Elite" unique_id=1885516826]
+texture = ExtResource("11_ohpug")
+offset = Vector2(16, 16)
+
 [node name="EffectLayer" type="Node2D" parent="." unique_id=1128003088]
+
+[node name="CombatFeedback" type="Node2D" parent="EffectLayer" unique_id=1576842909]
+z_index = 20
+script = ExtResource("12_ohpug")
 
 [node name="GridCursor" type="Node2D" parent="." unique_id=1649137336]
 script = ExtResource("2_d5hba")

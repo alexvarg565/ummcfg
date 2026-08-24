@@ -3,8 +3,13 @@ extends Node2D
 
 
 signal selected(unit: Unit)
-signal health_changed(unit: Unit, current_health: int, max_health: int)
+signal health_changed(
+	unit: Unit,
+	current_health: int,
+	max_health: int
+)
 signal died(unit: Unit)
+
 
 enum Team {
 	PLAYER,
@@ -40,6 +45,15 @@ var has_used_bonus_action: bool = false
 @onready var selection_outline: Polygon2D = \
 	$VisualRoot/SelectionOutline
 
+@onready var indicator_root: Node2D = \
+	$IndicatorRoot
+
+@onready var active_arrow: Sprite2D = \
+	$IndicatorRoot/ActiveArrow
+
+@onready var next_arrow: Sprite2D = \
+	$IndicatorRoot/NextArrow
+
 @onready var health_bar: ProgressBar = \
 	$HealthBar
 
@@ -53,6 +67,15 @@ func _ready() -> void:
 
 	selection_outline.visible = false
 
+	active_arrow.visible = false
+	next_arrow.visible = false
+
+	_start_indicator_float()
+
+
+# ==================================================
+# GRID POSITION
+# ==================================================
 
 func set_grid_position(cell: Vector2i) -> void:
 	grid_position = cell
@@ -62,6 +85,10 @@ func set_grid_position(cell: Vector2i) -> void:
 		cell.y * GridController.TILE_SIZE
 	)
 
+
+# ==================================================
+# ACTIVATION
+# ==================================================
 
 func begin_activation() -> void:
 	if not is_alive:
@@ -102,6 +129,10 @@ func mark_moved() -> void:
 func mark_acted() -> void:
 	has_acted = true
 
+
+# ==================================================
+# DAMAGE / DEATH
+# ==================================================
 
 func take_damage(amount: int) -> void:
 	if not is_alive:
@@ -145,10 +176,20 @@ func die() -> void:
 
 	deselect()
 
-	print(display_name, " destroyed.")
+	set_active_indicator(false)
+	set_next_indicator(false)
+
+	print(
+		display_name,
+		" destroyed."
+	)
 
 	died.emit(self)
 
+
+# ==================================================
+# SELECTION
+# ==================================================
 
 func select() -> void:
 	if not is_alive:
@@ -164,6 +205,68 @@ func deselect() -> void:
 	is_selected = false
 	selection_outline.visible = false
 
+
+# ==================================================
+# TURN INDICATORS
+# ==================================================
+
+func set_active_indicator(
+	enabled: bool
+) -> void:
+	active_arrow.visible = enabled
+
+	if enabled:
+		next_arrow.visible = false
+
+
+func set_next_indicator(
+	enabled: bool
+) -> void:
+	next_arrow.visible = enabled
+
+	if enabled:
+		active_arrow.visible = false
+
+
+func clear_turn_indicators() -> void:
+	active_arrow.visible = false
+	next_arrow.visible = false
+
+
+func _start_indicator_float() -> void:
+	var starting_y: float = \
+		indicator_root.position.y
+
+	var tween: Tween = create_tween()
+
+	tween.set_loops()
+
+	tween.set_trans(
+		Tween.TRANS_SINE
+	)
+
+	tween.set_ease(
+		Tween.EASE_IN_OUT
+	)
+
+	tween.tween_property(
+		indicator_root,
+		"position:y",
+		starting_y - 2.0,
+		0.45
+	)
+
+	tween.tween_property(
+		indicator_root,
+		"position:y",
+		starting_y,
+		0.45
+	)
+
+
+# ==================================================
+# TEAM HELPERS
+# ==================================================
 
 func is_player_unit() -> bool:
 	return team == Team.PLAYER
