@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dffsbqjybbv78" path="res://scripts/battle/initiative_controller.gd" id="4_0yh6x"]
 [ext_resource type="Script" uid="uid://ck0bedtrmom2w" path="res://scripts/battle/turn_controller.gd" id="5_h0kxc"]
 [ext_resource type="PackedScene" uid="uid://cfavtps23s5c" path="res://scenes/ui/battle_hud.tscn" id="6_fh7rg"]
+[ext_resource type="Script" uid="uid://76snbib7aihq" path="res://scripts/combat/displacement_system.gd" id="6_pll4o"]
 
 [node name="Battle" type="Node2D" unique_id=956603992]
 script = ExtResource("1_7gynk")
@@ -22,6 +23,9 @@ script = ExtResource("4_0yh6x")
 
 [node name="TurnController" type="Node" parent="Systems" unique_id=532202696]
 script = ExtResource("5_h0kxc")
+
+[node name="DisplacementSystem" type="Node" parent="Systems" unique_id=1264937336]
+script = ExtResource("6_pll4o")
 
 [node name="CameraRig" type="Node2D" parent="." unique_id=515529373]
 

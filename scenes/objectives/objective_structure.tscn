@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dywy207kaf1nh"]
+
+[ext_resource type="Script" uid="uid://duud3gbmx6n7r" path="res://scripts/objectives/objective_structure.gd" id="1_vpnhh"]
+
+[node name="ObjectiveStructure" type="Node2D" unique_id=1524059587]
+script = ExtResource("1_vpnhh")
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=1937722089]
+color = Color(0.36862746, 0.3764706, 0.4, 1)
+texture_scale = Vector2(32, 32)

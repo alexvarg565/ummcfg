@@ -7,6 +7,7 @@ script = ExtResource("1_dy3po")
 
 [node name="Root" type="Control" parent="." unique_id=1231066790]
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -106,3 +107,59 @@ text = "ATTACK"
 layout_mode = 2
 focus_mode = 0
 text = "END TURN"
+
+[node name="ObjectivePanel" type="PanelContainer" parent="Root" unique_id=1413023297]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -205.0
+offset_top = 42.0
+offset_right = -8.0
+offset_bottom = 92.0
+
+[node name="ObjectiveContainer" type="VBoxContainer" parent="Root/ObjectivePanel" unique_id=1706833017]
+layout_mode = 2
+
+[node name="ObjectiveTitleLabel" type="Label" parent="Root/ObjectivePanel/ObjectiveContainer" unique_id=1213533366]
+layout_mode = 2
+text = "DEFEND THE GENERATOR"
+
+[node name="ObjectiveHealthLabel" type="Label" parent="Root/ObjectivePanel/ObjectiveContainer" unique_id=740294822]
+layout_mode = 2
+text = "GENERATOR HP 15/15"
+
+[node name="ResultsOverlay" type="ColorRect" parent="Root" unique_id=1908433040]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.13725491, 0.13725491, 0.7019608)
+
+[node name="ResultsCenter" type="CenterContainer" parent="Root/ResultsOverlay" unique_id=742288678]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultsPanel" type="PanelContainer" parent="Root/ResultsOverlay/ResultsCenter" unique_id=2050745800]
+layout_mode = 2
+
+[node name="ResultsVBox" type="VBoxContainer" parent="Root/ResultsOverlay/ResultsCenter/ResultsPanel" unique_id=78529161]
+layout_mode = 2
+
+[node name="ResultTitleLabel" type="Label" parent="Root/ResultsOverlay/ResultsCenter/ResultsPanel/ResultsVBox" unique_id=807612663]
+layout_mode = 2
+text = "CONTRACT COMPLETE"
+
+[node name="ResultReasonLabel" type="Label" parent="Root/ResultsOverlay/ResultsCenter/ResultsPanel/ResultsVBox" unique_id=860647870]
+layout_mode = 2
+text = "All attackers destroyed"
+
+[node name="ResultButton" type="Button" parent="Root/ResultsOverlay/ResultsCenter/ResultsPanel/ResultsVBox" unique_id=1960606431]
+layout_mode = 2
+text = "CONTINUE"

@@ -1,12 +1,15 @@
 [gd_scene format=3 uid="uid://b5dgi03ssj1iq"]
 
 [ext_resource type="Script" uid="uid://bc4qk0owngri" path="res://scripts/grid/grid_overlay.gd" id="1_5rve1"]
+[ext_resource type="Texture2D" uid="uid://dvkt32leg8agu" path="res://assets/sprites/terrain/grasstestmapp.png" id="1_a56gc"]
 [ext_resource type="Script" uid="uid://l066fyqawa6n" path="res://scripts/grid/grid_cursor.gd" id="2_d5hba"]
 [ext_resource type="PackedScene" uid="uid://ctmxxhuxefvmw" path="res://scenes/units/unit.tscn" id="2_j68fe"]
 [ext_resource type="Script" uid="uid://retplmill132" path="res://scripts/grid/movement_highlights.gd" id="2_jabpe"]
 [ext_resource type="Script" uid="uid://coof8ha5p0l8w" path="res://scripts/combat/attack_highlights.gd" id="3_vp22n"]
 [ext_resource type="Script" uid="uid://l136xipqmu4o" path="res://scripts/ai/intent_highlights.gd" id="4_3cmhl"]
 [ext_resource type="Resource" uid="uid://bms184hftjay" path="res://data/weapons/test_cannon.tres" id="5_c8ews"]
+[ext_resource type="PackedScene" uid="uid://dywy207kaf1nh" path="res://scenes/objectives/objective_structure.tscn" id="6_nhmd8"]
+[ext_resource type="Resource" uid="uid://ct38nb3sqi8a" path="res://data/weapons/test_push_cannon.tres" id="6_ty28p"]
 [ext_resource type="Texture2D" uid="uid://balxklk2guwi1" path="res://assets/sprites/mechs/scrappers/scrapprobe.png" id="7_14yoq"]
 [ext_resource type="Texture2D" uid="uid://c3tbcljlq7ob4" path="res://assets/sprites/mechs/scrappers/scrapbomber.png" id="8_ynl3h"]
 [ext_resource type="Texture2D" uid="uid://baf421d4a2g5f" path="res://assets/sprites/mechs/scrappers/scrapcrawler.png" id="9_wt2cq"]
@@ -17,6 +20,11 @@
 [node name="Battlefield" type="Node2D" unique_id=1002692426]
 
 [node name="Ground" type="Node2D" parent="." unique_id=724229903]
+
+[node name="BattleFieldArt" type="Sprite2D" parent="Ground" unique_id=218307771]
+texture_filter = 1
+texture = ExtResource("1_a56gc")
+centered = false
 
 [node name="GridOverlay" type="Node2D" parent="." unique_id=426994446]
 script = ExtResource("1_5rve1")
@@ -30,12 +38,21 @@ script = ExtResource("3_vp22n")
 [node name="IntentHighlights" type="Node2D" parent="." unique_id=1773355177]
 script = ExtResource("4_3cmhl")
 
+[node name="ObjectiveLayer" type="Node2D" parent="." unique_id=1655295761]
+
+[node name="Generator" parent="ObjectiveLayer" unique_id=1524059587 instance=ExtResource("6_nhmd8")]
+
+[node name="Visual" type="Polygon2D" parent="ObjectiveLayer/Generator" unique_id=1608379921]
+z_index = 5
+polygon = PackedVector2Array(0, 0, 32, 0, 32, 32, 0, 32)
+uv = PackedVector2Array(-286.66666, -4, -274.66666, 44, -222.66666, 40, -227.33333, -22)
+
 [node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
 [node name="MechA" parent="UnitLayer" unique_id=480937545 instance=ExtResource("2_j68fe")]
 texture_filter = 1
 initiative = 18
-weapon = ExtResource("5_c8ews")
+weapon = ExtResource("6_ty28p")
 
 [node name="Sprite2D" type="Sprite2D" parent="UnitLayer/MechA" unique_id=524649572]
 texture = ExtResource("7_14yoq")
@@ -51,7 +68,7 @@ offset = Vector2(16, 16)
 
 [node name="MechC" parent="UnitLayer" unique_id=702576721 instance=ExtResource("2_j68fe")]
 initiative = 9
-weapon = ExtResource("5_c8ews")
+weapon = ExtResource("6_ty28p")
 
 [node name="Sprite2D" type="Sprite2D" parent="UnitLayer/MechC" unique_id=276804069]
 texture = ExtResource("9_wt2cq")
