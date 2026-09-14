@@ -419,13 +419,7 @@ func _on_result_restart_requested() -> void:
 
 
 func _on_result_continue_requested() -> void:
-	print(
-		"Continue requested."
-	)
-
-	print(
-		"Next step: transition into the contract/run flow."
-	)
+	RunManager.complete_contract()
 
 
 # ==================================================

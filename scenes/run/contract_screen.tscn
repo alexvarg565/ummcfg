@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://cn4bn72vcn7xn"]
+
+[ext_resource type="Script" uid="uid://c8djo4u2jmmkk" path="res://scripts/run/contract_screen.gd" id="1_i5722"]
+
+[node name="ContractScreen" type="Control" unique_id=650763893]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i5722")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1053843240]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="CenterContainer" parent="." unique_id=2079287343]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ContractPanel" type="PanelContainer" parent="Center" unique_id=1080700189]
+custom_minimum_size = Vector2(330, 180)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Center/ContractPanel" unique_id=81491956]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/ContractPanel/Margin" unique_id=851424855]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Center/ContractPanel/Margin/VBox" unique_id=869251843]
+layout_mode = 2
+text = "AVAILABLE CONTRACTS"
+
+[node name="ContractNameLabel" type="Label" parent="Center/ContractPanel/Margin/VBox" unique_id=118384022]
+layout_mode = 2
+text = "SETTLEMENT DEFENSE"
+
+[node name="DescriptionLabel" type="Label" parent="Center/ContractPanel/Margin/VBox" unique_id=123750074]
+layout_mode = 2
+text = "Protect the generator and destroy all attackers."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ProgressLabel" type="Label" parent="Center/ContractPanel/Margin/VBox" unique_id=282681301]
+layout_mode = 2
+text = "Contracts Completed: 0"
+
+[node name="StartContractButton" type="Button" parent="Center/ContractPanel/Margin/VBox" unique_id=867597294]
+layout_mode = 2
+text = "START CONTRACT"
