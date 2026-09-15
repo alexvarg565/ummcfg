@@ -47,8 +47,10 @@ func _refresh_screen() -> void:
 		"Protect the generator and destroy all attackers."
 
 	progress_label.text = \
-		"Contracts Completed: %d" \
-		% RunManager.contracts_completed
+		"Contracts Completed: %d\nSalvage: %d" % [
+			RunManager.contracts_completed,
+			RunManager.salvage
+		]
 
 	start_contract_button.text = \
 		"START CONTRACT"
