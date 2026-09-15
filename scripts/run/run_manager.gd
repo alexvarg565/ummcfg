@@ -14,6 +14,11 @@ const SETTLEMENT_DEFENSE: ContractDefinition = \
 		"res://data/contracts/settlement_defense.tres"
 	)
 
+const TEST_CONTRACT: ContractDefinition = \
+	preload(
+		"res://data/contracts/test_contract.tres"
+	)
+
 
 var available_contracts: Array[ContractDefinition] = []
 
@@ -48,11 +53,13 @@ func _setup_available_contracts() -> void:
 		SETTLEMENT_DEFENSE
 	)
 
-	# For now we only have one contract.
-	#
-	# Later the Contract Selection screen will
-	# explicitly choose one of the available
-	# definitions.
+	available_contracts.append(
+		TEST_CONTRACT
+	)
+
+
+	# Default to Settlement Defense when starting
+	# a fresh run.
 	if current_contract == null:
 		current_contract = \
 			SETTLEMENT_DEFENSE
@@ -66,6 +73,13 @@ func select_contract(
 	contract: ContractDefinition
 ) -> void:
 	if contract == null:
+		return
+
+	if contract not in available_contracts:
+		push_error(
+			"Cannot select contract: contract is not available."
+		)
+
 		return
 
 	current_contract = contract
@@ -91,12 +105,14 @@ func start_contract() -> void:
 
 		return
 
+
 	if current_contract.battle_scene == null:
 		push_error(
 			"Cannot start contract: selected contract has no battle scene."
 		)
 
 		return
+
 
 	get_tree().change_scene_to_packed(
 		current_contract.battle_scene
@@ -111,11 +127,14 @@ func complete_contract() -> void:
 
 		return
 
+
 	contracts_completed += 1
+
 
 	add_salvage(
 		current_contract.salvage_reward
 	)
+
 
 	go_to_contract_screen()
 

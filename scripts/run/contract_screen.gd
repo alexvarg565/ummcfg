@@ -1,8 +1,15 @@
 extends Control
 
 
+# ==================================================
+# REFERENCES
+# ==================================================
+
 @onready var title_label: Label = \
 	$Center/ContractPanel/Margin/VBox/TitleLabel
+
+@onready var contract_list: VBoxContainer = \
+	$Center/ContractPanel/Margin/VBox/ContractList
 
 @onready var contract_name_label: Label = \
 	$Center/ContractPanel/Margin/VBox/ContractNameLabel
@@ -25,28 +32,109 @@ func _ready() -> void:
 	start_contract_button.focus_mode = \
 		Control.FOCUS_NONE
 
+
 	start_contract_button.pressed.connect(
 		_on_start_contract_pressed
 	)
 
-	_refresh_screen()
+
+	_build_contract_list()
+
+	_refresh_contract_details()
 
 
 # ==================================================
-# DISPLAY
+# CONTRACT LIST
 # ==================================================
 
-func _refresh_screen() -> void:
+func _build_contract_list() -> void:
+	_clear_contract_list()
+
+
+	var available_contracts: Array[ContractDefinition] = \
+		RunManager.get_available_contracts()
+
+
+	for contract: ContractDefinition in \
+		available_contracts:
+
+		if contract == null:
+			continue
+
+
+		var button: Button = \
+			Button.new()
+
+
+		button.focus_mode = \
+			Control.FOCUS_NONE
+
+
+		if contract == \
+			RunManager.get_current_contract():
+
+			button.text = \
+				"[SELECTED] %s" \
+				% contract.display_name
+
+		else:
+
+			button.text = \
+				contract.display_name
+
+
+		button.pressed.connect(
+			_on_contract_selected.bind(
+				contract
+			)
+		)
+
+
+		contract_list.add_child(
+			button
+		)
+
+
+func _clear_contract_list() -> void:
+	for child: Node in \
+		contract_list.get_children():
+
+		child.queue_free()
+
+
+# ==================================================
+# CONTRACT SELECTION
+# ==================================================
+
+func _on_contract_selected(
+	contract: ContractDefinition
+) -> void:
+	RunManager.select_contract(
+		contract
+	)
+
+
+	_build_contract_list()
+
+	_refresh_contract_details()
+
+
+# ==================================================
+# CONTRACT DETAILS
+# ==================================================
+
+func _refresh_contract_details() -> void:
 	var contract: ContractDefinition = \
 		RunManager.get_current_contract()
 
 
 	title_label.text = \
-		"AVAILABLE CONTRACT"
+		"AVAILABLE CONTRACTS"
 
 
 	if contract == null:
 		_show_missing_contract()
+
 		return
 
 
@@ -69,15 +157,22 @@ func _refresh_screen() -> void:
 	start_contract_button.text = \
 		"START CONTRACT"
 
+
 	start_contract_button.disabled = false
 
+
+# ==================================================
+# MISSING CONTRACT
+# ==================================================
 
 func _show_missing_contract() -> void:
 	contract_name_label.text = \
 		"NO CONTRACT"
 
+
 	description_label.text = \
-		"No contract is currently available."
+		"No contract is currently selected."
+
 
 	progress_label.text = \
 		"Contracts Completed: %d\nSalvage: %d" % [
@@ -85,14 +180,16 @@ func _show_missing_contract() -> void:
 			RunManager.salvage
 		]
 
+
 	start_contract_button.text = \
 		"UNAVAILABLE"
+
 
 	start_contract_button.disabled = true
 
 
 # ==================================================
-# BUTTONS
+# START CONTRACT
 # ==================================================
 
 func _on_start_contract_pressed() -> void:

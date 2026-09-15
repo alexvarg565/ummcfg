@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ContractDefinition" format=3 uid="uid://bdnsidaw72yj"]
+
+[ext_resource type="PackedScene" uid="uid://yitqulno1e08" path="res://scenes/battle/battle.tscn" id="1_qb8fk"]
+[ext_resource type="Script" uid="uid://kjjvrdberqn7" path="res://resources/definitions/contract_definition.gd" id="1_vmchu"]
+
+[resource]
+script = ExtResource("1_vmchu")
+contract_id = &"test_contract"
+display_name = "TEST CONTRACT"
+description = "Test contract used to test"
+battle_scene = ExtResource("1_qb8fk")
+salvage_reward = 30
+metadata/_custom_type_script = "uid://kjjvrdberqn7"
