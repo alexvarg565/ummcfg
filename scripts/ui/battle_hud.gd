@@ -21,64 +21,59 @@ signal result_restart_requested
 
 
 # ==================================================
-# BOTTOM PANEL
+# BOTTOM HUD
 # ==================================================
 
-@onready var bottom_panel: PanelContainer = \
+@onready var bottom_panel: Control = \
 	$Root/BottomPanel
 
+
+# ==================================================
+# UNIT SECTION
+# ==================================================
+
 @onready var unit_name_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/UnitNameLabel
-
-
-# ==================================================
-# UNIT STATS
-# ==================================================
+	$Root/BottomPanel/BottomContent/UnitSection/UnitNameLabel
 
 @onready var health_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/StatsRow/HealthLabel
+	$Root/BottomPanel/BottomContent/UnitSection/HealthLabel
 
 @onready var movement_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/StatsRow/MovementLabel
+	$Root/BottomPanel/BottomContent/UnitSection/StatsRow/MovementLabel
 
 @onready var initiative_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/StatsRow/InitiativeLabel
+	$Root/BottomPanel/BottomContent/UnitSection/StatsRow/InitiativeLabel
 
 
 # ==================================================
-# WEAPON INFO
+# COMBAT SECTION
 # ==================================================
 
 @onready var weapon_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow/WeaponLabel
+	$Root/BottomPanel/BottomContent/CombatSection/WeaponLabel
 
 @onready var damage_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow/DamageLabel
+	$Root/BottomPanel/BottomContent/CombatSection/WeaponRow/DamageLabel
 
 @onready var range_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow/RangeLabel
-
-
-# ==================================================
-# ACTION STATE
-# ==================================================
+	$Root/BottomPanel/BottomContent/CombatSection/WeaponRow/RangeLabel
 
 @onready var move_state_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/ActionStateRow/MoveStateLabel
+	$Root/BottomPanel/BottomContent/CombatSection/ActionStateRow/MoveStateLabel
 
 @onready var action_state_label: Label = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/ActionStateRow/ActionStateLabel
+	$Root/BottomPanel/BottomContent/CombatSection/ActionStateRow/ActionStateLabel
 
 
 # ==================================================
-# BUTTONS
+# ACTION SECTION
 # ==================================================
 
 @onready var attack_button: Button = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/ActionRow/AttackButton
+	$Root/BottomPanel/BottomContent/ActionSection/AttackButton
 
 @onready var end_turn_button: Button = \
-	$Root/BottomPanel/BottomMargin/BottomVBox/ActionRow/EndTurnButton
+	$Root/BottomPanel/BottomContent/ActionSection/EndTurnButton
 
 
 # ==================================================
@@ -136,8 +131,9 @@ func _ready() -> void:
 		_on_result_button_pressed
 	)
 
+
 	# Prevent keyboard focus from accidentally
-	# activating battle buttons.
+	# activating buttons.
 	attack_button.focus_mode = \
 		Control.FOCUS_NONE
 
@@ -147,8 +143,16 @@ func _ready() -> void:
 	result_button.focus_mode = \
 		Control.FOCUS_NONE
 
-	objective_panel.visible = false
 
+	# Compact labels for the small action panel.
+	attack_button.text = \
+		"ATTACK"
+
+	end_turn_button.text = \
+		"END"
+
+
+	objective_panel.visible = false
 	results_overlay.visible = false
 
 
@@ -188,47 +192,60 @@ func refresh_unit(
 		clear_unit()
 		return
 
+
 	unit_name_label.text = \
-		unit.display_name
+		unit.display_name.to_upper()
+
 
 	health_label.text = \
-		"HP: %d / %d" % [
+		"HP %d/%d" % [
 			unit.current_health,
 			unit.max_health
 		]
 
+
 	movement_label.text = \
-		"MOVE: %d" % unit.movement_range
+		"MOV %d" % unit.movement_range
+
 
 	initiative_label.text = \
-		"INIT: %d" % unit.initiative
+		"INIT %d" % unit.initiative
 
+
+	# --------------------------------------------------
+	# WEAPON
+	# --------------------------------------------------
 
 	if unit.weapon != null:
+
 		weapon_label.text = \
-			unit.weapon.display_name
+			unit.weapon.display_name.to_upper()
+
 
 		damage_label.text = \
-			"DAMAGE: %s" % \
+			"DMG %s" % \
 			_get_damage_text(
 				unit.weapon
 			)
 
+
 		range_label.text = \
-			"RANGE: %d-%d" % [
+			"RNG %d-%d" % [
 				unit.weapon.min_range,
 				unit.weapon.max_range
 			]
 
+
 	else:
+
 		weapon_label.text = \
 			"NO WEAPON"
 
 		damage_label.text = \
-			"DAMAGE: --"
+			"DMG --"
 
 		range_label.text = \
-			"RANGE: --"
+			"RNG --"
 
 
 	_refresh_action_state(
@@ -236,10 +253,14 @@ func refresh_unit(
 	)
 
 
+# ==================================================
+# CLEAR UNIT
+# ==================================================
+
 func clear_unit() -> void:
 	unit_name_label.text = ""
-
 	health_label.text = ""
+
 	movement_label.text = ""
 	initiative_label.text = ""
 
@@ -262,15 +283,18 @@ func refresh_player_controls(
 	unit: Unit
 ) -> void:
 	if unit == null:
+
 		set_player_controls_enabled(
 			false
 		)
 
 		return
 
+
 	_refresh_action_state(
 		unit
 	)
+
 
 	attack_button.disabled = \
 		not unit.can_act()
@@ -288,31 +312,41 @@ func set_player_controls_enabled(
 		not enabled
 
 
+# ==================================================
+# ACTION STATE
+# ==================================================
+
 func _refresh_action_state(
 	unit: Unit
 ) -> void:
 	if unit == null:
+
 		move_state_label.text = ""
 		action_state_label.text = ""
 
 		return
 
+
 	if unit.can_move():
+
 		move_state_label.text = \
-			"MOVE: READY"
+			"MOVE READY"
 
 	else:
+
 		move_state_label.text = \
-			"MOVE: USED"
+			"MOVE USED"
 
 
 	if unit.can_act():
+
 		action_state_label.text = \
-			"ACTION: READY"
+			"ACT READY"
 
 	else:
+
 		action_state_label.text = \
-			"ACTION: USED"
+			"ACT USED"
 
 
 # ==================================================
@@ -330,22 +364,29 @@ func refresh_initiative(
 
 
 	for unit: Unit in initiative_order:
+
 		if unit == null:
 			continue
 
 		if not unit.is_alive:
 			continue
 
-
 		var label: Label = \
 			Label.new()
+		
+		label.add_theme_font_size_override(
+			"font_size",
+			9
+		)
 
 
 		if unit == active_unit:
+
 			label.text = \
 				"[ %s ]" % unit.display_name
 
 		else:
+
 			label.text = \
 				unit.display_name
 
@@ -367,8 +408,10 @@ func show_objective(
 ) -> void:
 	objective_panel.visible = true
 
+
 	objective_title_label.text = \
 		title
+
 
 	objective_health_label.text = \
 		"GENERATOR HP: %d / %d" % [
@@ -406,6 +449,7 @@ func show_battle_result(
 
 
 	if player_won:
+
 		result_title_label.text = \
 			"CONTRACT COMPLETE"
 
@@ -413,6 +457,7 @@ func show_battle_result(
 			"CONTINUE"
 
 	else:
+
 		result_title_label.text = \
 			"CONTRACT FAILED"
 
@@ -442,9 +487,11 @@ func _on_end_turn_button_pressed() -> void:
 
 func _on_result_button_pressed() -> void:
 	if result_was_win:
+
 		result_continue_requested.emit()
 
 	else:
+
 		result_restart_requested.emit()
 
 
@@ -467,10 +514,13 @@ func _get_damage_text(
 
 
 	if weapon.damage_bonus > 0:
+
 		text += \
 			"+%d" % weapon.damage_bonus
 
+
 	elif weapon.damage_bonus < 0:
+
 		text += \
 			str(
 				weapon.damage_bonus

@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://cfavtps23s5c"]
 
 [ext_resource type="Script" uid="uid://7g6f1qadn6v3" path="res://scripts/ui/battle_hud.gd" id="1_dy3po"]
+[ext_resource type="Texture2D" uid="uid://dcq2pwgwywm2f" path="res://assets/sprites/ui/topHUDex.png" id="2_p6blr"]
+[ext_resource type="Texture2D" uid="uid://0yc1wgkdamfi" path="res://assets/sprites/ui/bottomhudex.png" id="2_ytn0o"]
 
 [node name="BattleHUD" type="CanvasLayer" unique_id=848404943]
 script = ExtResource("1_dy3po")
@@ -15,20 +17,45 @@ grow_vertical = 2
 
 [node name="TopBar" type="PanelContainer" parent="Root" unique_id=843977609]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = 4.0
+offset_right = 160.0
+offset_bottom = 28.0
 grow_horizontal = 2
+
+[node name="TopShade" type="ColorRect" parent="Root/TopBar" unique_id=2085896222]
+layout_mode = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.003921569)
+
+[node name="TopHUDArt" type="TextureRect" parent="Root/TopBar" unique_id=1696035379]
+texture_filter = 1
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_p6blr")
+expand_mode = 1
 
 [node name="TopMargin" type="MarginContainer" parent="Root/TopBar" unique_id=974059527]
 layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 3
 
 [node name="TopHBox" type="HBoxContainer" parent="Root/TopBar/TopMargin" unique_id=977678955]
 layout_mode = 2
+theme_override_constants/separation = 3
 
 [node name="RoundLabel" type="Label" parent="Root/TopBar/TopMargin/TopHBox" unique_id=1050359184]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
+theme_override_font_sizes/font_size = 8
 text = "ROUND 1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="InitiativeBar" type="HBoxContainer" parent="Root/TopBar/TopMargin/TopHBox" unique_id=1682095292]
 layout_mode = 2
@@ -37,75 +64,118 @@ theme_override_constants/separation = 6
 [node name="BottomPanel" type="PanelContainer" parent="Root" unique_id=452289617]
 layout_mode = 1
 anchors_preset = -1
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_top = -112.0
+offset_left = -160.0
+offset_top = -76.0
+offset_right = 160.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="BottomMargin" type="MarginContainer" parent="Root/BottomPanel" unique_id=587148537]
+[node name="BottomShade" type="ColorRect" parent="Root/BottomPanel" unique_id=1438833259]
+layout_mode = 2
+color = Color(0, 0, 0, 0.003921569)
+
+[node name="BottomHUDArt" type="TextureRect" parent="Root/BottomPanel" unique_id=1818413564]
+texture_filter = 1
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_ytn0o")
+expand_mode = 1
+
+[node name="BottomContent" type="Control" parent="Root/BottomPanel" unique_id=994596588]
 layout_mode = 2
 
-[node name="BottomVBox" type="VBoxContainer" parent="Root/BottomPanel/BottomMargin" unique_id=784667093]
-layout_mode = 2
+[node name="UnitSection" type="VBoxContainer" parent="Root/BottomPanel/BottomContent" unique_id=1139539115]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 10.0
+offset_right = 145.0
+offset_bottom = 68.0
+theme_override_constants/separation = 1
 
-[node name="UnitNameLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox" unique_id=1621036364]
+[node name="UnitNameLabel" type="Label" parent="Root/BottomPanel/BottomContent/UnitSection" unique_id=1621036364]
 layout_mode = 2
+theme_override_font_sizes/font_size = 8
 text = "MECH A"
 
-[node name="StatsRow" type="HBoxContainer" parent="Root/BottomPanel/BottomMargin/BottomVBox" unique_id=1167095276]
+[node name="HealthLabel" type="Label" parent="Root/BottomPanel/BottomContent/UnitSection" unique_id=1545330882]
 layout_mode = 2
-
-[node name="HealthLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/StatsRow" unique_id=1545330882]
-layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "HP 10/10"
 
-[node name="MovementLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/StatsRow" unique_id=1734073082]
+[node name="StatsRow" type="HBoxContainer" parent="Root/BottomPanel/BottomContent/UnitSection" unique_id=1167095276]
 layout_mode = 2
+
+[node name="MovementLabel" type="Label" parent="Root/BottomPanel/BottomContent/UnitSection/StatsRow" unique_id=1734073082]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "MOVE 3"
 
-[node name="InitiativeLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/StatsRow" unique_id=1561964860]
+[node name="InitiativeLabel" type="Label" parent="Root/BottomPanel/BottomContent/UnitSection/StatsRow" unique_id=1561964860]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "INIT 18"
 
-[node name="WeaponRow" type="HBoxContainer" parent="Root/BottomPanel/BottomMargin/BottomVBox" unique_id=1340685737]
-layout_mode = 2
+[node name="CombatSection" type="VBoxContainer" parent="Root/BottomPanel/BottomContent" unique_id=1448796362]
+layout_mode = 0
+offset_left = 136.0
+offset_top = 9.0
+offset_right = 274.0
+offset_bottom = 69.0
+theme_override_constants/separation = 1
 
-[node name="WeaponLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow" unique_id=1899188943]
+[node name="WeaponLabel" type="Label" parent="Root/BottomPanel/BottomContent/CombatSection" unique_id=1899188943]
 layout_mode = 2
+theme_override_font_sizes/font_size = 8
 text = "TEST CANNON"
 
-[node name="DamageLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow" unique_id=837563628]
+[node name="WeaponRow" type="HBoxContainer" parent="Root/BottomPanel/BottomContent/CombatSection" unique_id=1340685737]
 layout_mode = 2
+
+[node name="DamageLabel" type="Label" parent="Root/BottomPanel/BottomContent/CombatSection/WeaponRow" unique_id=837563628]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "DMG 1d6"
 
-[node name="RangeLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/WeaponRow" unique_id=1487085220]
+[node name="RangeLabel" type="Label" parent="Root/BottomPanel/BottomContent/CombatSection/WeaponRow" unique_id=1487085220]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "RNG 1-3"
 
-[node name="ActionStateRow" type="HBoxContainer" parent="Root/BottomPanel/BottomMargin/BottomVBox" unique_id=437077967]
+[node name="ActionStateRow" type="HBoxContainer" parent="Root/BottomPanel/BottomContent/CombatSection" unique_id=437077967]
 layout_mode = 2
 
-[node name="MoveStateLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/ActionStateRow" unique_id=299477891]
+[node name="MoveStateLabel" type="Label" parent="Root/BottomPanel/BottomContent/CombatSection/ActionStateRow" unique_id=299477891]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "MOVE: READY"
 
-[node name="ActionStateLabel" type="Label" parent="Root/BottomPanel/BottomMargin/BottomVBox/ActionStateRow" unique_id=1503543535]
+[node name="ActionStateLabel" type="Label" parent="Root/BottomPanel/BottomContent/CombatSection/ActionStateRow" unique_id=1503543535]
 layout_mode = 2
+theme_override_font_sizes/font_size = 7
 text = "ACTION: READY"
 
-[node name="ActionRow" type="HBoxContainer" parent="Root/BottomPanel/BottomMargin/BottomVBox" unique_id=1788453479]
-layout_mode = 2
+[node name="ActionSection" type="VBoxContainer" parent="Root/BottomPanel/BottomContent" unique_id=923681989]
+layout_mode = 0
+offset_left = 277.0
+offset_top = 8.0
+offset_right = 321.0
+offset_bottom = 50.0
 
-[node name="AttackButton" type="Button" parent="Root/BottomPanel/BottomMargin/BottomVBox/ActionRow" unique_id=2034879108]
+[node name="AttackButton" type="Button" parent="Root/BottomPanel/BottomContent/ActionSection" unique_id=2034879108]
 layout_mode = 2
 focus_mode = 0
+theme_override_font_sizes/font_size = 7
 text = "ATTACK"
 
-[node name="EndTurnButton" type="Button" parent="Root/BottomPanel/BottomMargin/BottomVBox/ActionRow" unique_id=1220694364]
+[node name="EndTurnButton" type="Button" parent="Root/BottomPanel/BottomContent/ActionSection" unique_id=1220694364]
 layout_mode = 2
 focus_mode = 0
+theme_override_font_sizes/font_size = 7
 text = "END TURN"
 
 [node name="ObjectivePanel" type="PanelContainer" parent="Root" unique_id=1413023297]
