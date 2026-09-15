@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ContractDefinition" format=3 uid="uid://ceddkk5bdca76"]
+
+[ext_resource type="PackedScene" uid="uid://yitqulno1e08" path="res://scenes/battle/battle.tscn" id="1_6bkog"]
+[ext_resource type="Script" uid="uid://kjjvrdberqn7" path="res://resources/definitions/contract_definition.gd" id="1_kfgeh"]
+
+[resource]
+script = ExtResource("1_kfgeh")
+contract_id = &"settlement_defense"
+display_name = "SETTLEMENT DEFENSE"
+description = "Protect the generators."
+battle_scene = ExtResource("1_6bkog")
+salvage_reward = 25
+metadata/_custom_type_script = "uid://kjjvrdberqn7"

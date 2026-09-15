@@ -1581,7 +1581,7 @@ func _check_battle_end() -> void:
 		_end_battle(
 			true,
 			"Generator Survived\nReward: +%d Salvage"
-			% RunManager.SETTLEMENT_DEFENSE_SALVAGE_REWARD
+			% RunManager.get_current_salvage_reward()
 		)
 
 

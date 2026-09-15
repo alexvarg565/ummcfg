@@ -37,14 +37,47 @@ func _ready() -> void:
 # ==================================================
 
 func _refresh_screen() -> void:
+	var contract: ContractDefinition = \
+		RunManager.get_current_contract()
+
+
 	title_label.text = \
 		"AVAILABLE CONTRACT"
 
+
+	if contract == null:
+		_show_missing_contract()
+		return
+
+
 	contract_name_label.text = \
-		"SETTLEMENT DEFENSE"
+		contract.display_name
+
 
 	description_label.text = \
-		"Protect the generator and destroy all attackers."
+		contract.description
+
+
+	progress_label.text = \
+		"Reward: %d Salvage\nContracts Completed: %d\nSalvage: %d" % [
+			contract.salvage_reward,
+			RunManager.contracts_completed,
+			RunManager.salvage
+		]
+
+
+	start_contract_button.text = \
+		"START CONTRACT"
+
+	start_contract_button.disabled = false
+
+
+func _show_missing_contract() -> void:
+	contract_name_label.text = \
+		"NO CONTRACT"
+
+	description_label.text = \
+		"No contract is currently available."
 
 	progress_label.text = \
 		"Contracts Completed: %d\nSalvage: %d" % [
@@ -53,7 +86,9 @@ func _refresh_screen() -> void:
 		]
 
 	start_contract_button.text = \
-		"START CONTRACT"
+		"UNAVAILABLE"
+
+	start_contract_button.disabled = true
 
 
 # ==================================================
