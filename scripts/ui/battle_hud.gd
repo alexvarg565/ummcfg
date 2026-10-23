@@ -462,7 +462,7 @@ func show_battle_result(
 			"CONTRACT FAILED"
 
 		result_button.text = \
-			"RESTART"
+			"NEW RUN"
 
 
 	result_reason_label.text = \

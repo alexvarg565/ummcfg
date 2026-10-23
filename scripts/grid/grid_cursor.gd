@@ -15,6 +15,37 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Convert mouse world coordinates to battlefield-local grid cells.
+	# The parent stays stationary while this cursor moves, so do not use
+	# the cursor's own to_local() transform for the conversion.
+	if event is InputEventMouseButton:
+		var mouse_button: InputEventMouseButton = \
+			event as InputEventMouseButton
+
+		if (
+			mouse_button.button_index == MOUSE_BUTTON_LEFT
+			and mouse_button.pressed
+		):
+			var battlefield: Node2D = get_parent() as Node2D
+			if battlefield == null:
+				return
+
+			var battlefield_position: Vector2 = \
+				battlefield.to_local(get_global_mouse_position())
+
+			var clicked_cell: Vector2i = Vector2i(
+				floori(battlefield_position.x / GridController.TILE_SIZE),
+				floori(battlefield_position.y / GridController.TILE_SIZE)
+			)
+
+			if _is_inside_grid(clicked_cell):
+				grid_position = clicked_cell
+				_update_world_position()
+				cell_selected.emit(clicked_cell)
+				get_viewport().set_input_as_handled()
+
+		return
+
 	var direction := Vector2i.ZERO
 
 	if event.is_action_pressed("cursor_up"):
