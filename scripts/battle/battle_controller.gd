@@ -8,6 +8,11 @@ enum InputMode {
 }
 
 
+const OBSTACLE_SCENE: PackedScene = preload(
+	"res://scenes/terrain/battlefield_obstacle.tscn"
+)
+
+
 const PLAYER_MOVE_STEP_DURATION: float = 0.10
 
 const ENEMY_START_DELAY: float = 0.35
@@ -59,6 +64,9 @@ const INVALID_TARGET_CELL: Vector2i = Vector2i(
 
 @onready var combat_feedback: CombatFeedback = \
 	$Battlefield/EffectLayer/CombatFeedback
+
+@onready var obstacle_layer: Node2D = \
+	$Battlefield/ObstacleLayer
 
 @onready var unit_layer: Node2D = \
 	$Battlefield/UnitLayer
@@ -157,6 +165,8 @@ func _ready() -> void:
 	_collect_units()
 
 	_register_unit_signals()
+
+	_place_obstacles()
 
 	_place_units()
 
@@ -391,6 +401,38 @@ func _place_objective() -> void:
 			"Could not place objective structure at %s."
 			% objective_cell
 		)
+
+
+# ==================================================
+# STATIC TERRAIN: CHECKPOINT 1
+# ==================================================
+
+func _place_obstacles() -> void:
+	# Fixed test layout. Checkpoint 2 will choose validated layouts.
+	# These cells avoid all six spawn tiles and the generator (3, 3).
+	_spawn_obstacle(Vector2i(3, 1), BattlefieldObstacle.ObstacleType.ROCK)
+	_spawn_obstacle(Vector2i(4, 4), BattlefieldObstacle.ObstacleType.BUILDING)
+	_spawn_obstacle(Vector2i(3, 6), BattlefieldObstacle.ObstacleType.SCRAP)
+
+
+func _spawn_obstacle(cell: Vector2i, kind: BattlefieldObstacle.ObstacleType) -> void:
+	var obstacle: BattlefieldObstacle = OBSTACLE_SCENE.instantiate() as BattlefieldObstacle
+
+	if obstacle == null:
+		push_error("Could not instantiate BattlefieldObstacle.")
+		return
+
+	obstacle.name = "Obstacle_%d_%d" % [cell.x, cell.y]
+	obstacle.configure(cell, kind)
+
+	# Register before adding it to the scene: placement failure cannot
+	# leave an invisible collision or a visible nonblocking obstacle.
+	if not grid_controller.register_static_blocker(obstacle, cell):
+		push_error("Obstacle cell %s is invalid or already occupied." % cell)
+		obstacle.free()
+		return
+
+	obstacle_layer.add_child(obstacle)
 
 
 # ==================================================

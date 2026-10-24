@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://lns4plr3ibiy"]
+
+[ext_resource type="Script" uid="uid://dvmwuk82fefn6" path="res://scripts/terrain/battlefield_obstacle.gd" id="1_kmoxi"]
+
+[node name="BattlefieldObstacle" type="Node2D" unique_id=1709810387]
+script = ExtResource("1_kmoxi")

@@ -38,14 +38,11 @@ script = ExtResource("3_vp22n")
 [node name="IntentHighlights" type="Node2D" parent="." unique_id=1773355177]
 script = ExtResource("4_3cmhl")
 
+[node name="ObstacleLayer" type="Node2D" parent="." unique_id=478511038]
+
 [node name="ObjectiveLayer" type="Node2D" parent="." unique_id=1655295761]
 
 [node name="Generator" parent="ObjectiveLayer" unique_id=1524059587 instance=ExtResource("6_nhmd8")]
-
-[node name="Visual" type="Polygon2D" parent="ObjectiveLayer/Generator" unique_id=1608379921]
-z_index = 5
-polygon = PackedVector2Array(0, 0, 32, 0, 32, 32, 0, 32)
-uv = PackedVector2Array(-286.66666, -4, -274.66666, 44, -222.66666, 40, -227.33333, -22)
 
 [node name="UnitLayer" type="Node2D" parent="." unique_id=1693928490]
 
